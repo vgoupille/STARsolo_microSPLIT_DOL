@@ -25,12 +25,12 @@ git clone https://github.com/vgoupille/STARsolo_microSPLIT_DOL.git
 cd STARsolo_microSPLIT_DOL
 
 # Make the submission script executable
-chmod +x submit_pipeline.sh
+chmod +x script/pipeline/submit_pipeline.sh
 ```
 
 ## Description
 
-This project contains a series of scripts to analyze single-cell RNA-seq data generated with microSPLIT technology. It uses STARsolo, an implementation of the STAR pipeline dedicated to single-cell data, to align reads and quantify gene expression. The pipeline generates count matrices that are essential for downstream analysis using tools like Seurat (R) or Scanpy (Python).
+This project contains a series of scripts to analyze single-cell RNA-seq data generated with microSPLIT technology. It uses STARsolo, an implementation of the STAR pipeline dedicated to single-cell data, to align reads and quantify gene expression (mapping, demultiplexing and quantification). The pipeline generates count matrices that are essential for downstream analysis using tools like Seurat (R) or Scanpy (Python).
 
 ### About microSPLIT Technology
 
@@ -70,12 +70,15 @@ For more details on STARsolo parameters and options, see the [official documenta
 
 ```
 .
-├── config.sh                      # Configuration file with all parameters
-├── submit_pipeline.sh             # Wrapper script to submit the pipeline with custom parameters
-├── starsolo_microsplit_pipeline.sh # Main script implementing the complete analysis pipeline
-├── create_env_starsolo.sh         # Script to create conda environment with STARsolo (legacy)
-├── create_links.sh                # Script to prepare directory structure and links (legacy)
-├── run_starsolo_DOL_microsplit.sh # STARsolo analysis script (legacy)
+├── script/                        # Main directory for all scripts
+│   ├── pipeline/                  # Current pipeline scripts
+│   │   ├── config.sh              # Configuration file with all parameters
+│   │   ├── submit_pipeline.sh     # Wrapper script to submit the pipeline
+│   │   └── starsolo_microsplit_pipeline.sh # Main pipeline script
+│   └── legacy/                    # Legacy scripts (for reference)
+│       ├── 1_create_env_starsolo.sh        # Create conda environment
+│       ├── 2_legacy_create_links.sh        # Set up directory structure
+│       └── 3_legacy_run_starsolo_microsplit.sh # Run STARsolo analysis
 └── raw_data/                      # Directory containing raw data
     ├── fastq/                     # FASTQ files (reads)
     ├── barcodes/                  # Barcode files
@@ -93,28 +96,28 @@ For more details on STARsolo parameters and options, see the [official documenta
 
 ### New Wrapper Approach (Recommended)
 
-1. Edit the `config.sh` file to match your data paths and resource requirements:
+1. Edit the `script/pipeline/config.sh` file to match your data paths and resource requirements:
 
 ```bash
-nano config.sh
+nano script/pipeline/config.sh
 ```
 
 2. Run the pipeline with default parameters from config.sh:
 
 ```bash
-./submit_pipeline.sh
+./script/pipeline/submit_pipeline.sh
 ```
 
 3. Or customize SLURM parameters at submission time:
 
 ```bash
-./submit_pipeline.sh --threads 32 --memory 64G --runtime 12:00:00
+./script/pipeline/submit_pipeline.sh --threads 32 --memory 64G --runtime 12:00:00
 ```
 
 4. For all available options:
 
 ```bash
-./submit_pipeline.sh --help
+./script/pipeline/submit_pipeline.sh --help
 ```
 
 ### Direct Submission (Alternative)
@@ -122,7 +125,7 @@ nano config.sh
 You can still submit the pipeline script directly with SLURM, but you won't be able to override parameters as easily:
 
 ```bash
-sbatch starsolo_microsplit_pipeline.sh
+sbatch script/pipeline/starsolo_microsplit_pipeline.sh
 ```
 
 ### Legacy Approach (Individual Scripts)
@@ -132,19 +135,19 @@ If you prefer, you can still run each step individually:
 1. Create the conda environment with STARsolo:
 
 ```bash
-sbatch create_env_starsolo.sh
+sbatch script/legacy/1_create_env_starsolo.sh
 ```
 
 2. Create the necessary symbolic links:
 
 ```bash
-sbatch create_links.sh
+sbatch script/legacy/2_legacy_create_links.sh
 ```
 
 3. Launch the STARsolo analysis:
 
 ```bash
-sbatch run_starsolo_DOL_microsplit.sh
+sbatch script/legacy/3_legacy_run_starsolo_microsplit.sh
 ```
 
 ## Customizable Parameters
@@ -236,6 +239,6 @@ Analysis_STARsolo_microsplit/
 
 ## Author
 
-**Valentin Goupille** - Université de Rennes
+**Valentin Goupille** - Ecobio UMR 6553 CNRS - Université
 
 For questions or issues related to this pipeline, please open an issue on GitHub or contact the author directly. 
