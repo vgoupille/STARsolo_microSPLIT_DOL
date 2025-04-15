@@ -5,9 +5,9 @@
 #SBATCH --mail-user=valentin.goupille@univ-rennes.fr
 #SBATCH --mail-type=BEGIN,END,FAIL          # Email notifications
 #SBATCH --ntasks=1                   # Number of tasks
-#SBATCH --cpus-per-task=16           # CPUs per task
-#SBATCH --mem=64G                    # Memory allocation
-#SBATCH --time=24:00:00              # Maximum job runtime
+#SBATCH --cpus-per-task=16  #16           # CPUs per task
+#SBATCH --mem=16G  #64G                    # Memory allocation
+#SBATCH --time=4:00:00              # Maximum job runtime
 #SBATCH --output=starsolo_%j.out     # Standard output log file
 #SBATCH --error=starsolo_%j.err      # Standard error log file
 
@@ -16,7 +16,7 @@
 . /local/env/envconda.sh
 
 # Activate the specific Conda environment for STARsolo
-conda activate env_STARsolo  # Path to STARsolo environment
+conda activate 5_environnements/env_STARsolo  # Path to STARsolo environment
 
 # Function to check command success
 check_success() {
@@ -35,22 +35,26 @@ THREADS=16
 # ===================================================================
 
 # Base directories
-DATA_DIR="raw_data"                    # Main data directory
+BASE_DIR="starsolo_script_DOL_microsplit"
+DATA_DIR="${BASE_DIR}/raw_data"                    # Main data directory
 GENOME_REF_DIR="${DATA_DIR}/genome_ref"  # Genome reference directory
+GENOME_ANNOTATION_DIR="${DATA_DIR}/genome_annotation" # Directory containing genome annotation
 FASTQ_DIR="${DATA_DIR}/fastq"      # Directory containing FASTQ files
 BARCODE_DIR="${DATA_DIR}/barcodes" # Directory containing barcode files
 
-# Reference Genome and Annotation Files
-GENOME_FASTA="${GENOME_REF_DIR}/GCA_030064105.1_ASM3006410v1_genomic.fna"  # 
-GFF3_FILE="${GENOME_REF_DIR}/genomic_annotation_R401.gff"                  # Path to annotation file
 
-# Sequencing Read Files (Paired-End)
+# Reference Genome and Annotation Files
+GENOME_FASTA="${GENOME_REF_DIR}/GCA_030064105.1_ASM3006410v1_genomic.fna"  #path to genome fasta file (.fna)
+GFF3_FILE="${GENOME_ANNOTATION_DIR}/GCA_030064105.1_ASM3006410v1_genomic.gff"  #path to genome annotation file (.gff)
+
+# Sequencing Read Files (Paired-End) (microsplit)
 READ1="${FASTQ_DIR}/microSPLIT-600cells_S1_L001_R1_001.fastq.gz"  # Path to R1 file (contains barcodes)
 READ2="${FASTQ_DIR}/microSPLIT-600cells_S1_L001_R2_001.fastq.gz"  # Path to R2 file (contains cDNA)
 
 # Output Directory Configuration
-GENOME_DIR="genome_index"           # Directory for STAR genome index
-OUTPUT_DIR="starsolo_output"        # Directory for STARsolo output
+GENERAL_OUTPUT_DIR="${BASE_DIR}/Output_DOL_microsplit_starsolo"
+GENOME_DIR="${GENERAL_OUTPUT_DIR}/genome_index"           # Directory for STAR genome index
+OUTPUT_STARSOLO_DIR="${GENERAL_OUTPUT_DIR}/starsolo_output"        # Directory for STARsolo output
 
 # Barcode Files for Single-Cell Sequencing
 # Specify barcode files for each round of barcoding
@@ -64,7 +68,8 @@ BARCODE_RD3="${BARCODE_DIR}/barcode_round3.txt"  # Barcodes for round 3
 # ===================================================================
 
 # Create Necessary Output Directories
-mkdir -p $GENOME_DIR $OUTPUT_DIR
+mkdir -p $GENERAL_OUTPUT_DIR
+mkdir -p $GENOME_DIR $OUTPUT_STARSOLO_DIR
 
 # Input File Validation
 # Check if all required input files exist before processing
@@ -127,42 +132,102 @@ STAR --genomeDir $GENOME_DIR \
     --alignSJDBoverhangMin 1000 \
     --alignSJoverhangMin 1000 \
     --outSAMtype BAM Unsorted \
-    --outFileNamePrefix "$OUTPUT_DIR/"
+    --outFileNamePrefix "$OUTPUT_STARSOLO_DIR/"
 check_success "STARsolo alignment and quantification"
 
 # 5. Output Validation
-# Check if critical output files were generated
+# Check if critical output files were generated and provide detailed metrics
 echo "$(date) - Verifying output files..."
-if [ -f "$OUTPUT_DIR/Log.final.out" ] && [ -f "$OUTPUT_DIR/Solo.out/GeneFull/Raw/UniqueAndMult-Uniform.mtx" ]; then
-    echo "Analysis completed successfully!"
-    echo "Key files for downstream analysis:"
-    echo "- $OUTPUT_DIR/Solo.out/GeneFull/barcodes.tsv"
-    echo "- $OUTPUT_DIR/Solo.out/GeneFull/features.tsv"
-    echo "- $OUTPUT_DIR/Solo.out/GeneFull/Raw/UniqueAndMult-Uniform.mtx"
-    
-    # Display alignment statistics
-    echo "Alignment statistics:"
-    grep "Uniquely mapped reads %" "$OUTPUT_DIR/Log.final.out"
-    grep "Number of reads mapped to multiple loci" "$OUTPUT_DIR/Log.final.out"
-    grep "Number of detected cells" "$OUTPUT_DIR/Solo.out/GeneFull/Summary.csv" 2>/dev/null || echo "Cell information not available"
-else
-    echo "ERROR: Some output files are missing!"
+
+# Check for log file
+if [ ! -f "$OUTPUT_STARSOLO_DIR/Log.final.out" ]; then
+    echo "ERROR: Log file not found!"
     exit 1
 fi
 
-# Create metadata file for traceability
-echo "$(date) - Creating metadata file..."
-{
-    echo "# STARsolo analysis metadata"
-    echo "Date: $(date)"
-    echo "Genome: $GENOME_FASTA"
-    echo "Annotation: $GFF3_FILE"
-    echo "Read1: $READ1"
-    echo "Read2: $READ2"
-    echo "Command version: $(STAR --version)"
-} > "$OUTPUT_DIR/analysis_metadata.txt"
+# Check for matrix files in both Gene and GeneFull features
+GENE_MTX="$OUTPUT_STARSOLO_DIR/Solo.out/Gene/raw/UniqueAndMult-Uniform.mtx"
+GENEFULL_MTX="$OUTPUT_STARSOLO_DIR/Solo.out/GeneFull/raw/UniqueAndMult-Uniform.mtx"
+BARCODE_FILE="$OUTPUT_STARSOLO_DIR/Solo.out/GeneFull/barcodes.tsv"
+FEATURE_FILE="$OUTPUT_STARSOLO_DIR/Solo.out/GeneFull/features.tsv"
 
-echo "$(date) - Processing completed"
+MISSING_FILES=0
+for file in "$GENE_MTX" "$GENEFULL_MTX" "$BARCODE_FILE" "$FEATURE_FILE"; do
+    if [ ! -f "$file" ]; then
+        echo "WARNING: Missing output file: $file"
+        MISSING_FILES=$((MISSING_FILES+1))
+    fi
+done
+
+if [ $MISSING_FILES -gt 0 ]; then
+    echo "WARNING: $MISSING_FILES output files are missing!"
+else
+    echo "Analysis completed successfully!"
+    echo "Key files for downstream analysis:"
+    echo "- $BARCODE_FILE"
+    echo "- $FEATURE_FILE"
+    echo "- $GENEFULL_MTX"
+    echo "- $GENE_MTX"
+    
+    # Display detailed alignment statistics
+    echo -e "\nAlignment statistics:"
+    echo "-----------------------"
+    echo "$(grep "Number of input reads" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    echo "$(grep "Average input read length" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    echo "$(grep "Uniquely mapped reads number" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    echo "$(grep "Uniquely mapped reads %" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    echo "$(grep "Number of reads mapped to multiple loci" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    echo "$(grep "% of reads mapped to multiple loci" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    echo "$(grep "Number of reads unmapped: other" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    echo "$(grep "% of reads unmapped: other" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    echo "$(grep "Mismatch rate per base, %" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    
+    # Display mapping speed
+    echo -e "\nProcessing speed:"
+    echo "--------------------"
+    echo "$(grep "Mapping speed, Million of reads per hour" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    echo "$(grep "Started job on" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    echo "$(grep "Finished on" "$OUTPUT_STARSOLO_DIR/Log.final.out")"
+    
+    # Display cell statistics if available
+    echo -e "\nCell statistics:"
+    echo "----------------"
+    if [ -f "$OUTPUT_STARSOLO_DIR/Solo.out/GeneFull/Summary.csv" ]; then
+        SUMMARY_FILE="$OUTPUT_STARSOLO_DIR/Solo.out/GeneFull/Summary.csv"
+        
+        # Extract key metrics from Summary.csv
+        echo "# Cell metrics from Summary.csv:"
+        echo "--------------------------------"
+        
+        # Function to extract value from Summary.csv
+        extract_metric() {
+            grep "^$1," "$SUMMARY_FILE" | cut -d',' -f2
+        }
+        
+        # Display important cell metrics
+        echo "Estimated Number of Cells: $(extract_metric "Estimated Number of Cells")"
+        echo "Reads With Valid Barcodes: $(extract_metric "Reads With Valid Barcodes") (fraction)"
+        echo "Sequencing Saturation: $(extract_metric "Sequencing Saturation") (fraction)"
+        echo "Reads Mapped to GeneFull: $(extract_metric "Reads Mapped to GeneFull: Unique+Multipe GeneFull") (fraction)"
+        echo "Mean Reads per Cell: $(extract_metric "Mean Reads per Cell")"
+        echo "Median Reads per Cell: $(extract_metric "Median Reads per Cell")"
+        echo "UMIs in Cells: $(extract_metric "UMIs in Cells")"
+        echo "Mean UMI per Cell: $(extract_metric "Mean UMI per Cell")"
+        echo "Median UMI per Cell: $(extract_metric "Median UMI per Cell")"
+        echo "Mean GeneFull per Cell: $(extract_metric "Mean GeneFull per Cell")"
+        echo "Median GeneFull per Cell: $(extract_metric "Median GeneFull per Cell")"
+        echo "Total GeneFull Detected: $(extract_metric "Total GeneFull Detected")"
+        
+        # Also show simple counts from files
+        echo -e "\n# File-based counts:"
+        echo "Barcodes count: $(wc -l < "$BARCODE_FILE")"
+        echo "Features count: $(wc -l < "$FEATURE_FILE")"
+    else
+        echo "WARNING: Summary.csv file not found at $OUTPUT_STARSOLO_DIR/Solo.out/GeneFull/Summary.csv"
+        echo "Estimated number of cells: $(wc -l < "$BARCODE_FILE")"
+        echo "Number of genes/features: $(wc -l < "$FEATURE_FILE")"
+    fi
+fi
 
 # ===================================================================   
 # STARsolo Parameters Reference
