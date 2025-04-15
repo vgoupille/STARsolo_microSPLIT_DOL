@@ -2,9 +2,69 @@
 
 Pipeline for analyzing single-cell RNA sequencing (scRNA-seq) data generated with microSPLIT technology using STARsolo.
 
+## Getting Started
+
+### Access Cluster and Clone Repository
+
+1. Connect to your computational cluster:
+```bash
+ssh your_username@your_cluster_address
+```
+
+2. Navigate to your preferred working directory:
+```bash
+cd /path/to/your/working/directory
+# For example:
+# cd /home/user/projects/scRNAseq_analysis
+```
+
+3. Clone the repository and set up the environment:
+```bash
+# Clone the repository
+git clone https://github.com/vgoupille/STARsolo_microSPLIT_DOL.git
+cd STARsolo_microSPLIT_DOL
+
+# Make the submission script executable
+chmod +x submit_pipeline.sh
+```
+
 ## Description
 
-This project contains a series of scripts to analyze single-cell RNA-seq data generated with microSPLIT technology. It uses STARsolo, an implementation of the STAR pipeline dedicated to single-cell data, to align reads and quantify gene expression.
+This project contains a series of scripts to analyze single-cell RNA-seq data generated with microSPLIT technology. It uses STARsolo, an implementation of the STAR pipeline dedicated to single-cell data, to align reads and quantify gene expression. The pipeline generates count matrices that are essential for downstream analysis using tools like Seurat (R) or Scanpy (Python).
+
+### About microSPLIT Technology
+
+This pipeline is specifically designed for data generated using the microSPLIT protocol, as described in [Kuchina et al. (2021)](https://www.science.org/doi/10.1126/science.aba5257),
+[Gaiser et al. (2024)](https://www.nature.com/articles/s41596-024-01007-w) which uses a split-pool barcoding approach for single-cell sequencing for bacteria.
+
+### Generated Output Matrices
+
+STARsolo generates several types of count matrices depending on different mapping and counting strategies:
+
+- **Mapping strategies**: 
+  - `Unique`: Only uniquely mapped reads
+  - `UniqueAndMult-Uniform`: Both uniquely mapped reads and multimapped reads (with uniform weight distribution)
+
+- **Feature types**:
+  - `Gene`: Counts based on reads mapped to exons only
+  - `GeneFull`: Counts including reads mapped to both exons and introns
+
+- **Filtering options**:
+  - `raw`: All barcodes, including potential background
+  - `filtered`: Only cells passing quality thresholds
+
+The current implementation uses `UniqueAndMult-Uniform` mapping with both `Gene` and `GeneFull` feature counting to maximize data recovery, especially for species with incomplete annotations.
+
+### Key Parameters
+
+The pipeline uses optimized parameters for microSPLIT data:
+- Complex barcode setup with 3 rounds of barcoding
+- CB (Cell Barcode) positions: 0_10_0_17 0_48_0_55 0_78_0_85 (corresponding to the 3 rounds)
+- UMI position: 0_0_0_9
+- 1 mismatch allowed in barcode matching
+- Optimized alignment parameters for increased sensitivity
+
+For more details on STARsolo parameters and options, see the [official documentation](https://github.com/alexdobin/STAR/blob/master/docs/STARsolo.md).
 
 ## Project Structure
 
@@ -172,4 +232,10 @@ Analysis_STARsolo_microsplit/
 
 - The analysis is specifically configured for microSPLIT technology with 3 rounds of cell barcoding.
 - STAR alignment parameters are optimized for microSPLIT data.
-- The wrapper approach (submit_pipeline.sh) provides flexibility to customize resources without modifying the pipeline script. 
+- The wrapper approach (submit_pipeline.sh) provides flexibility to customize resources without modifying the pipeline script.
+
+## Author
+
+**Valentin Goupille** - Université de Rennes
+
+For questions or issues related to this pipeline, please open an issue on GitHub or contact the author directly. 
