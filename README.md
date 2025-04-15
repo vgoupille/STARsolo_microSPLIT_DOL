@@ -34,7 +34,9 @@ This project contains a series of scripts to analyze single-cell RNA-seq data ge
 sbatch create_env_starsolo.sh
 ```
 
-2. Organize your raw data in the appropriate structure:
+2. Organize your raw data:
+
+You don't need to manually organize files in a specific structure. The `create_links.sh` script will automatically create the necessary symbolic links to your raw data in the following structure:
 
 ```
 raw_data/
@@ -52,6 +54,8 @@ raw_data/
 ```
 
 3. Create the necessary symbolic links:
+
+Run the script that will set up all required symbolic links to your data:
 
 ```bash
 sbatch create_links.sh
