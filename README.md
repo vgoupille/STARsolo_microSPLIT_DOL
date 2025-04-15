@@ -10,23 +10,48 @@ This project contains a series of scripts to analyze single-cell RNA-seq data ge
 
 ```
 .
-├── create_env_starsolo.sh    # Script to create conda environment with STARsolo
-├── create_links.sh           # Script to prepare directory structure and create symbolic links
-├── run_starsolo_DOL_microsplit.sh  # Main STARsolo analysis script
-└── raw_data/                 # Directory containing raw data
-    ├── fastq/                # FASTQ files (reads)
-    ├── barcodes/             # Barcode files
-    ├── genome_ref/           # Genome reference files
-    └── genome_annotation/    # Genome annotation files
+├── config.sh                  # Configuration file with all parameters
+├── run_pipeline.sh            # Main script to run the complete pipeline in one command
+├── create_env_starsolo.sh     # Script to create conda environment with STARsolo (legacy)
+├── create_links.sh            # Script to prepare directory structure and links (legacy)
+├── run_starsolo_DOL_microsplit.sh  # STARsolo analysis script (legacy)
+└── raw_data/                  # Directory containing raw data
+    ├── fastq/                 # FASTQ files (reads)
+    ├── barcodes/              # Barcode files
+    ├── genome_ref/            # Genome reference files
+    └── genome_annotation/     # Genome annotation files
 ```
 
 ## Prerequisites
 
 - Conda/Miniconda
 - Access to a computing cluster (script is configured for SLURM)
-- Raw data organized as described in the following section
+- Raw data organized as described in the configuration file
 
-## Installation
+## Installation and Usage
+
+### New Unified Approach (Recommended)
+
+1. Edit the `config.sh` file to match your data paths and resource requirements:
+
+```bash
+nano config.sh
+```
+
+2. Run the complete pipeline with a single command:
+
+```bash
+sbatch run_pipeline.sh
+```
+
+This will automatically:
+- Create the STARsolo environment (if needed)
+- Set up the directory structure and create symbolic links
+- Run the STARsolo analysis with the configured parameters
+
+### Legacy Approach (Individual Scripts)
+
+If you prefer, you can still run each step individually:
 
 1. Create the conda environment with STARsolo:
 
@@ -34,60 +59,42 @@ This project contains a series of scripts to analyze single-cell RNA-seq data ge
 sbatch create_env_starsolo.sh
 ```
 
-2. Organize your raw data:
-
-You don't need to manually organize files in a specific structure. The `create_links.sh` script will automatically create the necessary symbolic links to your raw data in the following structure:
-
-```
-raw_data/
-├── fastq/
-│   ├── microSPLIT-600cells_S1_L001_R1_001.fastq.gz
-│   └── microSPLIT-600cells_S1_L001_R2_001.fastq.gz
-├── barcodes/
-│   ├── barcode_round1.txt
-│   ├── barcode_round2.txt
-│   └── barcode_round3.txt
-├── genome_ref/
-│   └── GCA_030064105.1_ASM3006410v1_genomic.fna
-└── genome_annotation/
-    └── GCA_030064105.1_ASM3006410v1_genomic.gff
-```
-
-3. Create the necessary symbolic links:
-
-Run the script that will set up all required symbolic links to your data:
+2. Create the necessary symbolic links:
 
 ```bash
 sbatch create_links.sh
 ```
 
-## Usage
-
-Launch the STARsolo analysis:
+3. Launch the STARsolo analysis:
 
 ```bash
 sbatch run_starsolo_DOL_microsplit.sh
 ```
 
-This script performs the following steps:
-1. Converting GFF3 file to GTF
-2. Correcting GTF file for compatibility with STAR
-3. Generating genome index
-4. Alignment and quantification with STARsolo
-5. Verification and reporting of results
-
 ## Customizable Parameters
 
-The main parameters can be modified in the `run_starsolo_DOL_microsplit.sh` script:
+All parameters can be modified in the `config.sh` file:
 
-- `THREADS`: Number of threads to use
-- `BASE_DIR`: Base directory for analysis
-- Paths to input and output files
-- Positions of cell barcodes and UMI in the reads
+- Email notification settings
+- Analysis name and base directory
+- Computational resources (threads, memory, runtime)
+- Paths to source data
+- File names for input and output
+
+## Pipeline Steps
+
+The pipeline performs the following steps:
+1. Setting up the STARsolo environment
+2. Creating the directory structure and symbolic links
+3. Converting GFF3 file to GTF
+4. Correcting GTF file for compatibility with STAR
+5. Generating genome index
+6. Alignment and quantification with STARsolo
+7. Verification and reporting of results
 
 ## Results
 
-The results will be generated in the `Analysis_STARsolo_microsplit/Output_DOL_microsplit_starsolo/` directory with the following structure:
+The results will be generated in the configured output directory with the following structure:
 
 ```
 Analysis_STARsolo_microsplit/
@@ -102,4 +109,5 @@ Analysis_STARsolo_microsplit/
 ## Notes
 
 - The analysis is specifically configured for microSPLIT technology with 3 rounds of cell barcoding.
-- STAR alignment parameters are optimized for microSPLIT data. 
+- STAR alignment parameters are optimized for microSPLIT data.
+- The unified pipeline script replaces the need to run the three individual scripts separately. 
