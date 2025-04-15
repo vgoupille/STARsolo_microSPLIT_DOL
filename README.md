@@ -10,16 +10,17 @@ This project contains a series of scripts to analyze single-cell RNA-seq data ge
 
 ```
 .
-├── config.sh                  # Configuration file with all parameters
-├── run_pipeline.sh            # Main script to run the complete pipeline in one command
-├── create_env_starsolo.sh     # Script to create conda environment with STARsolo (legacy)
-├── create_links.sh            # Script to prepare directory structure and links (legacy)
-├── run_starsolo_DOL_microsplit.sh  # STARsolo analysis script (legacy)
-└── raw_data/                  # Directory containing raw data
-    ├── fastq/                 # FASTQ files (reads)
-    ├── barcodes/              # Barcode files
-    ├── genome_ref/            # Genome reference files
-    └── genome_annotation/     # Genome annotation files
+├── config.sh                      # Configuration file with all parameters
+├── submit_pipeline.sh             # Wrapper script to submit the pipeline with custom parameters
+├── starsolo_microsplit_pipeline.sh # Main script implementing the complete analysis pipeline
+├── create_env_starsolo.sh         # Script to create conda environment with STARsolo (legacy)
+├── create_links.sh                # Script to prepare directory structure and links (legacy)
+├── run_starsolo_DOL_microsplit.sh # STARsolo analysis script (legacy)
+└── raw_data/                      # Directory containing raw data
+    ├── fastq/                     # FASTQ files (reads)
+    ├── barcodes/                  # Barcode files
+    ├── genome_ref/                # Genome reference files
+    └── genome_annotation/         # Genome annotation files
 ```
 
 ## Prerequisites
@@ -30,7 +31,7 @@ This project contains a series of scripts to analyze single-cell RNA-seq data ge
 
 ## Installation and Usage
 
-### New Unified Approach (Recommended)
+### New Wrapper Approach (Recommended)
 
 1. Edit the `config.sh` file to match your data paths and resource requirements:
 
@@ -38,16 +39,31 @@ This project contains a series of scripts to analyze single-cell RNA-seq data ge
 nano config.sh
 ```
 
-2. Run the complete pipeline with a single command:
+2. Run the pipeline with default parameters from config.sh:
 
 ```bash
-sbatch run_pipeline.sh
+./submit_pipeline.sh
 ```
 
-This will automatically:
-- Create the STARsolo environment (if needed)
-- Set up the directory structure and create symbolic links
-- Run the STARsolo analysis with the configured parameters
+3. Or customize SLURM parameters at submission time:
+
+```bash
+./submit_pipeline.sh --threads 32 --memory 64G --runtime 12:00:00
+```
+
+4. For all available options:
+
+```bash
+./submit_pipeline.sh --help
+```
+
+### Direct Submission (Alternative)
+
+You can still submit the pipeline script directly with SLURM, but you won't be able to override parameters as easily:
+
+```bash
+sbatch starsolo_microsplit_pipeline.sh
+```
 
 ### Legacy Approach (Individual Scripts)
 
@@ -73,13 +89,59 @@ sbatch run_starsolo_DOL_microsplit.sh
 
 ## Customizable Parameters
 
-All parameters can be modified in the `config.sh` file:
+### Configuration File (config.sh)
 
-- Email notification settings
-- Analysis name and base directory
-- Computational resources (threads, memory, runtime)
-- Paths to source data
-- File names for input and output
+The configuration file (`config.sh`) contains all parameters needed to run the pipeline. **You must review and modify this file before running the pipeline** to ensure it matches your data and computing environment.
+
+#### Essential Parameters (Must Configure)
+
+- **Data Paths**:
+  - `SOURCE_FASTQ`: Absolute path to the directory containing your FASTQ files
+  - `SOURCE_BARCODES`: Absolute path to the directory containing barcode files
+  - `SOURCE_GENOME_REF`: Absolute path to the directory containing genome reference FASTA
+  - `SOURCE_GENOME_ANNOTATION`: Absolute path to the directory containing genome annotation (GFF)
+
+- **Input File Names**:
+  - `SOURCE_FASTQ_R1`: Filename of the R1 FASTQ file (reads)
+  - `SOURCE_FASTQ_R2`: Filename of the R2 FASTQ file (reads)
+  - `SOURCE_GENOME_FASTA`: Filename of the genome reference FASTA
+  - `SOURCE_GENOME_GFF`: Filename of the genome annotation file (GFF format)
+
+#### Recommended to Configure
+
+- **Resources** (can also be overridden through submit_pipeline.sh):
+  - `THREADS`: Number of CPU threads to use (default: 16, recommended: 32 or 64 for large datasets)
+  - `MEMORY`: Memory allocation (default: 16G, recommended: 32G or 64G for large genomes)
+  - `MAX_RUNTIME`: Maximum job runtime in format HH:MM:SS (default: 10:00:00)
+
+- **Analysis Identification**:
+  - `EMAIL`: Email address for job notifications
+  - `ANALYSIS_NAME`: Name of the analysis (will be used for job name)
+  - `BASE_DIR`: Directory where all output will be stored
+
+#### Optional Parameters
+
+- **Environment**:
+  - `CONDA_ENV_PATH`: Path where the conda environment will be created
+
+- **Output File Names**:
+  - `TARGET_FASTQ_R1`: Internal symbolic link name for R1 FASTQ
+  - `TARGET_FASTQ_R2`: Internal symbolic link name for R2 FASTQ
+  - `TARGET_GENOME_FASTA`: Internal symbolic link name for genome FASTA
+  - `TARGET_GENOME_GFF`: Internal symbolic link name for genome GFF
+
+- **Internal Directory Structure**:
+  - Several variables define the internal directory structure (typically don't need modification)
+
+### Command-line Options (submit_pipeline.sh)
+
+The following parameters can be overridden at submission time:
+
+- `--threads N`: Number of CPU threads to use
+- `--memory SIZE`: Memory allocation (e.g., 32G, 64G)
+- `--runtime HH:MM:SS`: Maximum runtime
+- `--email ADDRESS`: Notification email
+- `--name JOBNAME`: SLURM job name
 
 ## Pipeline Steps
 
@@ -110,4 +172,4 @@ Analysis_STARsolo_microsplit/
 
 - The analysis is specifically configured for microSPLIT technology with 3 rounds of cell barcoding.
 - STAR alignment parameters are optimized for microSPLIT data.
-- The unified pipeline script replaces the need to run the three individual scripts separately. 
+- The wrapper approach (submit_pipeline.sh) provides flexibility to customize resources without modifying the pipeline script. 

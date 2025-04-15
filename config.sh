@@ -2,6 +2,15 @@
 
 # === Global Configuration for STARsolo Pipeline ===
 
+#Here you can change the name of the analysis, the location of the folder for the Analysis, the number of threads, the memory, the maximum runtime, the location of the conda environment, the source data locations, the source file names, the target file names...
+
+#Go to the folder where you want to run the analysis :
+# for example : 
+ #cd 1_data/test/starsolo_script_DOL_microsplit/
+ #then you can run the analysis with the following command :
+ #sbatch run_pipeline.sh
+
+
 # Email Configuration
 EMAIL="valentin.goupille@univ-rennes.fr"
 
@@ -14,16 +23,16 @@ THREADS=16 #for the number of threads (cpus-per-task): You can change it #VERY I
 
 MEMORY="16G" #for the memory : You can change it #VERY IMPORTANT : YOU NEED TO HAVE ENOUGH MEMORY TO RUN THE ANALYSIS : 16G IS MABY NOT ENOUGH FOR THE ANALYSIS =======> test with 32G or 64G IS PROBABLY BETTER
 
-MAX_RUNTIME="4:00:00" #for the maximum runtime : You can change it
+MAX_RUNTIME="10:00:00" #for the maximum runtime : You can change it
 
 # Environment Paths
 CONDA_ENV_PATH="Analysis_STARsolo_microsplit/env_STARsolo" #for the location of the conda environment : You can change it (not necessary in Analysis_STARsolo_microsplit)
 
-# Source Data Locations - Update these to match your actual source directories
-SOURCE_FASTQ="1_data/Fastq" 
-SOURCE_BARCODES="starsolo_script_DOL_microsplit/raw_data/barcodes" 
-SOURCE_GENOME_REF="starsolo_script_DOL_microsplit/raw_data/genome_ref" 
-SOURCE_GENOME_ANNOTATION="starsolo_script_DOL_microsplit/raw_data/genome_annotation"
+# Source Data Locations - Absolute paths to prevent errors
+SOURCE_FASTQ="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/Fastq" 
+SOURCE_BARCODES="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/test/starsolo_script_DOL_microsplit/raw_data/barcodes" 
+SOURCE_GENOME_REF="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/test/starsolo_script_DOL_microsplit/raw_data/genome_ref" 
+SOURCE_GENOME_ANNOTATION="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/test/starsolo_script_DOL_microsplit/raw_data/genome_annotation"
 
 # Source File Names - Update these to match your actual source files
 SOURCE_FASTQ_R1="microSPLIT-600cells_S1_L001_R1_001.fastq.gz"

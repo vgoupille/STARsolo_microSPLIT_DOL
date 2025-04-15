@@ -27,13 +27,9 @@ echo "$(date) - Creating base directory structure..."
 mkdir -p "$BASE_DIR"
 echo "Base directory created or already exists: $BASE_DIR"
 
-# Update SLURM parameters from config
-# Note: These won't take effect for the current job, but are updated for consistency
-sed -i "s/--job-name=.*/--job-name=${ANALYSIS_NAME}/g" "$0"
-sed -i "s/--mail-user=.*/--mail-user=${EMAIL}/g" "$0"
-sed -i "s/--cpus-per-task=.*/--cpus-per-task=${THREADS}/g" "$0"
-sed -i "s/--mem=.*/--mem=${MEMORY}/g" "$0"
-sed -i "s/--time=.*/--time=${MAX_RUNTIME}/g" "$0"
+# Note: SLURM parameters are now handled by the submit_pipeline.sh wrapper
+# No need to update SLURM parameters here as they are passed via sbatch command
+echo "Using SLURM parameters provided at submission time."
 
 # Function to check if a script completed successfully
 check_script() {
