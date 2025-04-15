@@ -6,9 +6,9 @@
 
 #Go to the folder where you want to run the analysis :
 # for example : 
- #cd 1_data/test/starsolo_script_DOL_microsplit/
- #then you can run the analysis with the following command :
- #sbatch run_pipeline.sh
+    #cd 1_data/test/starsolo_script_DOL_microSPLIT/
+    #then you can run the analysis with the following command :
+    #sbatch run_pipeline.sh
 
 
 # Email Configuration
@@ -16,7 +16,7 @@ EMAIL="valentin.goupille@univ-rennes.fr"
 
 # Analysis Name and Base Directory
 ANALYSIS_NAME="STARsolo_DOL_microSPLIT" #for the name of the analysis : In the slurm output file, it will be the name of the job
-BASE_DIR="Analysis_STARsolo_microsplit" #for the location of the folder for the Analysis : You can change it
+BASE_DIR="Analysis_STARsolo_microSPLIT" #for the location of the folder for the Analysis : You can change it
 
 # Resource Configuration
 THREADS=16 #for the number of threads (cpus-per-task): You can change it #VERY IMPORTANT : YOU NEED TO HAVE ENOUGH THREADS TO RUN THE ANALYSIS : 16 IS MABY NOT ENOUGH FOR THE ANALYSIS =======> test with 32 or 64 is probably better
@@ -26,13 +26,23 @@ MEMORY="16G" #for the memory : You can change it #VERY IMPORTANT : YOU NEED TO H
 MAX_RUNTIME="10:00:00" #for the maximum runtime : You can change it
 
 # Environment Paths
-CONDA_ENV_PATH="Analysis_STARsolo_microsplit/env_STARsolo" #for the location of the conda environment : You can change it (not necessary in Analysis_STARsolo_microsplit)
+CONDA_ENV_PATH="Analysis_STARsolo_microSPLIT/env_STARsolo" #for the location of the conda environment : You can change it (not necessary in Analysis_STARsolo_microSPLIT)
 
 # Source Data Locations - Absolute paths to prevent errors
-SOURCE_FASTQ="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/Fastq" 
-SOURCE_BARCODES="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/test/starsolo_script_DOL_microsplit/raw_data/barcodes" 
-SOURCE_GENOME_REF="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/test/starsolo_script_DOL_microsplit/raw_data/genome_ref" 
-SOURCE_GENOME_ANNOTATION="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/test/starsolo_script_DOL_microsplit/raw_data/genome_annotation"
+# Define your base path here (change this to your actual base path)
+BASE_PATH="/path/to/your/base/directory"  # <-- Change this to your actual base directory
+
+# Access to files in the current directory
+SOURCE_FASTQ="${BASE_PATH}/fastq/directory" 
+SOURCE_BARCODES="${BASE_PATH}/barcodes/directory" 
+
+# Access to files in the parent directory (one level up)
+SOURCE_GENOME_REF="${BASE_PATH}/../shared_references/genome_ref/directory" 
+# Example with direct absolute path without using variables
+SOURCE_GENOME_ANNOTATION="/absolute/path/to/genome_annotation/directory"
+
+# Example of accessing a file two levels up
+# ANOTHER_REFERENCE="${BASE_PATH}/../../global_references/other_file"
 
 # Source File Names - Update these to match your actual source files
 SOURCE_FASTQ_R1="microSPLIT-600cells_S1_L001_R1_001.fastq.gz"

@@ -8,7 +8,7 @@ THREADS=16
 MEMORY="16G"
 MAX_RUNTIME="8:00:00"
 EMAIL="valentin.goupille@univ-rennes.fr"
-ANALYSIS_NAME="STARsolo_MicroSplit_Pipeline"
+ANALYSIS_NAME="STARsolo_microSPLIT_Pipeline"
 
 # Load configuration if available
 if [ -f "config.sh" ]; then

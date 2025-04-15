@@ -36,7 +36,7 @@ THREADS=16
 
 # Base directories
 #choose the location of the folder for the Analysis : You can change it
-BASE_DIR="Analysis_STARsolo_microsplit"
+BASE_DIR="Analysis_STARsolo_microSPLIT"
 DATA_DIR="${BASE_DIR}/raw_data"                    # Main data directory
 GENOME_REF_DIR="${DATA_DIR}/genome_ref"  # Genome reference directory
 GENOME_ANNOTATION_DIR="${DATA_DIR}/genome_annotation" # Directory containing genome annotation
@@ -149,8 +149,8 @@ fi
 # Check for matrix files in both Gene and GeneFull features
 GENE_MTX="$OUTPUT_STARSOLO_DIR/Solo.out/Gene/raw/UniqueAndMult-Uniform.mtx"
 GENEFULL_MTX="$OUTPUT_STARSOLO_DIR/Solo.out/GeneFull/raw/UniqueAndMult-Uniform.mtx"
-BARCODE_FILE="$OUTPUT_STARSOLO_DIR/Solo.out/GeneFull/barcodes.tsv"
-FEATURE_FILE="$OUTPUT_STARSOLO_DIR/Solo.out/GeneFull/features.tsv"
+BARCODE_FILE="$OUTPUT_STARSOLO_DIR/Solo.out/GeneFull/raw/barcodes.tsv"
+FEATURE_FILE="$OUTPUT_STARSOLO_DIR/Solo.out/GeneFull/raw/features.tsv"
 
 MISSING_FILES=0
 for file in "$GENE_MTX" "$GENEFULL_MTX" "$BARCODE_FILE" "$FEATURE_FILE"; do

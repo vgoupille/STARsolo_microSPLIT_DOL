@@ -167,8 +167,8 @@ fi
 # Check for matrix files in both Gene and GeneFull features
 GENE_MTX="${OUTPUT_STARSOLO_DIR}/Solo.out/Gene/raw/UniqueAndMult-Uniform.mtx"
 GENEFULL_MTX="${OUTPUT_STARSOLO_DIR}/Solo.out/GeneFull/raw/UniqueAndMult-Uniform.mtx"
-BARCODE_FILE="${OUTPUT_STARSOLO_DIR}/Solo.out/GeneFull/barcodes.tsv"
-FEATURE_FILE="${OUTPUT_STARSOLO_DIR}/Solo.out/GeneFull/features.tsv"
+BARCODE_FILE="${OUTPUT_STARSOLO_DIR}/Solo.out/GeneFull/raw/barcodes.tsv"
+FEATURE_FILE="${OUTPUT_STARSOLO_DIR}/Solo.out/GeneFull/raw/features.tsv"
 
 MISSING_FILES=0
 for file in "$GENE_MTX" "$GENEFULL_MTX" "$BARCODE_FILE" "$FEATURE_FILE"; do
