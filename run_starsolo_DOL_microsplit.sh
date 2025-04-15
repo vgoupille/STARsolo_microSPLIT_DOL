@@ -35,7 +35,8 @@ THREADS=16
 # ===================================================================
 
 # Base directories
-BASE_DIR="starsolo_script_DOL_microsplit"
+#choose the location of the folder for the Analysis : You can change it
+BASE_DIR="Analysis_STARsolo_microsplit"
 DATA_DIR="${BASE_DIR}/raw_data"                    # Main data directory
 GENOME_REF_DIR="${DATA_DIR}/genome_ref"  # Genome reference directory
 GENOME_ANNOTATION_DIR="${DATA_DIR}/genome_annotation" # Directory containing genome annotation
@@ -44,12 +45,12 @@ BARCODE_DIR="${DATA_DIR}/barcodes" # Directory containing barcode files
 
 
 # Reference Genome and Annotation Files
-GENOME_FASTA="${GENOME_REF_DIR}/GCA_030064105.1_ASM3006410v1_genomic.fna"  #path to genome fasta file (.fna)
-GFF3_FILE="${GENOME_ANNOTATION_DIR}/GCA_030064105.1_ASM3006410v1_genomic.gff"  #path to genome annotation file (.gff)
+GENOME_FASTA="${GENOME_REF_DIR}/genome_ref_PsR401.fna"  #path to genome fasta file (.fna)
+GFF3_FILE="${GENOME_ANNOTATION_DIR}/genome_annotation_PsR401.gff"  #path to genome annotation file (.gff)
 
 # Sequencing Read Files (Paired-End) (microsplit)
-READ1="${FASTQ_DIR}/microSPLIT-600cells_S1_L001_R1_001.fastq.gz"  # Path to R1 file (contains barcodes)
-READ2="${FASTQ_DIR}/microSPLIT-600cells_S1_L001_R2_001.fastq.gz"  # Path to R2 file (contains cDNA)
+READ1="${FASTQ_DIR}/microSPLIT-R1.fastq.gz"  # Path to R1 file (contains barcodes)
+READ2="${FASTQ_DIR}/microSPLIT-R2.fastq.gz"  # Path to R2 file (contains cDNA)
 
 # Output Directory Configuration
 GENERAL_OUTPUT_DIR="${BASE_DIR}/Output_DOL_microsplit_starsolo"
