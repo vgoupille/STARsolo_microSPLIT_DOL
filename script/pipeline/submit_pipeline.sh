@@ -10,10 +10,13 @@ MAX_RUNTIME="8:00:00"
 EMAIL="valentin.goupille@univ-rennes.fr"
 ANALYSIS_NAME="STARsolo_microSPLIT_Pipeline"
 
+# Get the directory where this script is located
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
 # Load configuration if available
-if [ -f "config.sh" ]; then
-    source config.sh
-    echo "Configuration loaded from config.sh"
+if [ -f "$SCRIPT_DIR/config.sh" ]; then
+    source "$SCRIPT_DIR/config.sh"
+    echo "Configuration loaded from $SCRIPT_DIR/config.sh"
 fi
 
 # Help function
@@ -81,6 +84,6 @@ sbatch --job-name="$ANALYSIS_NAME" \
        --cpus-per-task="$THREADS" \
        --mem="$MEMORY" \
        --time="$MAX_RUNTIME" \
-       starsolo_microsplit_pipeline.sh
+       "$SCRIPT_DIR/starsolo_microsplit_pipeline.sh"
 
 echo "Job submitted. Use 'squeue -u $USER' to check status." 

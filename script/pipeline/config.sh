@@ -26,14 +26,14 @@ MEMORY="16G" #for the memory : You can change it #VERY IMPORTANT : YOU NEED TO H
 MAX_RUNTIME="10:00:00" #for the maximum runtime : You can change it
 
 # Environment Paths
-CONDA_ENV_PATH="Analysis_STARsolo_microSPLIT/env_STARsolo" #for the location of the conda environment : You can change it (not necessary in Analysis_STARsolo_microSPLIT)
+CONDA_ENV_PATH="${BASE_DIR}/env_STARsolo" #for the location of the conda environment : You can change it (not necessary in Analysis_STARsolo_microSPLIT)
 
 # Source Data Locations - Absolute paths to prevent errors
 # Define your base path here (change this to your actual base path)
 BASE_PATH="/path/to/your/base/directory"  # <-- Change this to your actual base directory
 
 # Access to files in the current directory
-SOURCE_FASTQ="${BASE_PATH}/fastq/directory" 
+SOURCE_FASTQ="/path/to/your/fastq/directory" 
 SOURCE_BARCODES="${BASE_PATH}/barcodes/directory" 
 
 # Access to files in the parent directory (one level up)
