@@ -1,10 +1,13 @@
 #!/bin/bash
+#SBATCH --job-name=create_links_DOL_microsplit
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=valentin.goupille@univ-rennes.fr
 
 # This script creates the necessary directory structure and symbolic links
 # for the STARsolo analysis script to find the input files.
 
 # Base directories from the STARsolo script
-BASE_DIR="starsolo_script_DOL_microsplit"
+BASE_DIR="Analysis_STARsolo_microsplit"
 DATA_DIR="${BASE_DIR}/raw_data"
 FASTQ_DIR="${DATA_DIR}/fastq"
 BARCODE_DIR="${DATA_DIR}/barcodes"
