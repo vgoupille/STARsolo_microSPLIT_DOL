@@ -22,6 +22,11 @@ else
     exit 1
 fi
 
+# Create BASE_DIR early to avoid issues with conda environment
+echo "$(date) - Creating base directory structure..."
+mkdir -p "$BASE_DIR"
+echo "Base directory created or already exists: $BASE_DIR"
+
 # Update SLURM parameters from config
 # Note: These won't take effect for the current job, but are updated for consistency
 sed -i "s/--job-name=.*/--job-name=${ANALYSIS_NAME}/g" "$0"

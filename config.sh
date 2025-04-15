@@ -6,16 +6,18 @@
 EMAIL="valentin.goupille@univ-rennes.fr"
 
 # Analysis Name and Base Directory
-ANALYSIS_NAME="STARsolo_DOL_microSPLIT"
-BASE_DIR="Analysis_STARsolo_microsplit"
+ANALYSIS_NAME="STARsolo_DOL_microSPLIT" #for the name of the analysis : In the slurm output file, it will be the name of the job
+BASE_DIR="Analysis_STARsolo_microsplit" #for the location of the folder for the Analysis : You can change it
 
 # Resource Configuration
-THREADS=16
-MEMORY="16G"
-MAX_RUNTIME="4:00:00"
+THREADS=16 #for the number of threads (cpus-per-task): You can change it #VERY IMPORTANT : YOU NEED TO HAVE ENOUGH THREADS TO RUN THE ANALYSIS : 16 IS MABY NOT ENOUGH FOR THE ANALYSIS =======> test with 32 or 64 is probably better
+
+MEMORY="16G" #for the memory : You can change it #VERY IMPORTANT : YOU NEED TO HAVE ENOUGH MEMORY TO RUN THE ANALYSIS : 16G IS MABY NOT ENOUGH FOR THE ANALYSIS =======> test with 32G or 64G IS PROBABLY BETTER
+
+MAX_RUNTIME="4:00:00" #for the maximum runtime : You can change it
 
 # Environment Paths
-CONDA_ENV_PATH="/DOL_scRNAseq/5_environnements/env_STARsolo"
+CONDA_ENV_PATH="Analysis_STARsolo_microsplit/env_STARsolo" #for the location of the conda environment : You can change it
 
 # Source Data Locations - Update these to match your actual source directories
 SOURCE_FASTQ="1_data/Fastq" 
