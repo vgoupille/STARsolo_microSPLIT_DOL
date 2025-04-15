@@ -17,7 +17,7 @@ MEMORY="16G" #for the memory : You can change it #VERY IMPORTANT : YOU NEED TO H
 MAX_RUNTIME="4:00:00" #for the maximum runtime : You can change it
 
 # Environment Paths
-CONDA_ENV_PATH="Analysis_STARsolo_microsplit/env_STARsolo" #for the location of the conda environment : You can change it
+CONDA_ENV_PATH="Analysis_STARsolo_microsplit/env_STARsolo" #for the location of the conda environment : You can change it (not necessary in Analysis_STARsolo_microsplit)
 
 # Source Data Locations - Update these to match your actual source directories
 SOURCE_FASTQ="1_data/Fastq" 
