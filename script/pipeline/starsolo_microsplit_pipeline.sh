@@ -86,14 +86,14 @@ fi
 # Step 1: Create STARsolo environment (if not already created)
 echo "$(date) - Step 1: Creating STARsolo environment (if needed)..."
 
-# Vérifier d'abord que le chemin parent de l'environnement conda existe
+# First check if the parent directory of the conda environment exists
 CONDA_PARENT_DIR=$(dirname "$CONDA_ENV_PATH")
 if [ ! -d "$CONDA_PARENT_DIR" ]; then
     echo "Creating parent directory for conda environment: $CONDA_PARENT_DIR"
     mkdir -p "$CONDA_PARENT_DIR" || { echo "ERROR: Failed to create conda environment parent directory"; exit 1; }
 fi
 
-# Vérifier si l'environnement existe déjà
+# Check if the environment already exists
 if conda env list | grep -q "${CONDA_ENV_PATH##*/}"; then
     echo "STARsolo environment already exists. Trying to activate..."
     if ! conda activate "$CONDA_ENV_PATH"; then
@@ -110,7 +110,7 @@ else
     CREATE_NEW_ENV=1
 fi
 
-# Créer un nouvel environnement si nécessaire
+# Create a new environment if needed
 if [ $CREATE_NEW_ENV -eq 1 ]; then
     echo "Creating STARsolo environment at: $CONDA_ENV_PATH"
     conda create -p "$CONDA_ENV_PATH" python=3.6 -y || { echo "ERROR: Failed to create conda environment"; exit 1; }
@@ -119,22 +119,22 @@ if [ $CREATE_NEW_ENV -eq 1 ]; then
     conda activate "$CONDA_ENV_PATH" || { echo "ERROR: Failed to activate the new conda environment"; exit 1; }
     conda install -c bioconda star=2.7.9 cufflinks=2.2.1 gffread=0.12.1 -y || { echo "ERROR: Failed to install required packages"; exit 1; }
     
-    # Vérifier les versions des outils installés
+    # Check installed tool versions
     echo "Checking installed tools versions:"
     STAR --version || { echo "ERROR: STAR not properly installed"; exit 1; }
     
-    # Cufflinks ne reconnaît pas l'option --version, on vérifie juste qu'il est exécutable
+    # Cufflinks doesn't support --version, just check if it's executable
     echo "Checking Cufflinks installation:"
     if ! command -v cufflinks &> /dev/null; then
         echo "ERROR: Cufflinks not found"
         exit 1
     else
         echo "Cufflinks is installed"
-        # On peut afficher la première ligne d'aide pour confirmer que ça fonctionne
+        # Display the first line of help output to confirm it works
         cufflinks 2>&1 | head -n 1
     fi
     
-    # Vérifier que gffread est disponible
+    # Check if gffread is available
     echo "Checking gffread installation:"
     if ! command -v gffread &> /dev/null; then
         echo "ERROR: gffread not found"
@@ -144,14 +144,14 @@ if [ $CREATE_NEW_ENV -eq 1 ]; then
     fi
 fi
 
-# Toujours activer l'environnement avant de continuer
+# Always activate the environment before continuing
 echo "Activating conda environment..."
 conda activate "$CONDA_ENV_PATH" || { echo "ERROR: Failed to activate conda environment at $CONDA_ENV_PATH"; exit 1; }
 
-# Vérifier que les commandes requises sont disponibles
+# Check that required commands are available
 echo "Verifying required tools availability..."
 
-# Vérifier d'abord STAR et gffread qui acceptent des options de version
+# First check STAR and gffread which accept version options
 for cmd in STAR gffread; do
     if ! command -v $cmd &> /dev/null; then
         echo "ERROR: $cmd command not found in the activated environment"
@@ -160,7 +160,7 @@ for cmd in STAR gffread; do
     fi
 done
 
-# Vérification spéciale pour cufflinks
+# Special check for cufflinks
 if ! command -v cufflinks &> /dev/null; then
     echo "ERROR: cufflinks command not found in the activated environment"
     echo "Please check your conda environment installation"
@@ -218,7 +218,7 @@ check_success() {
 # Convert GFF3 to GTF Format
 echo "$(date) - Converting GFF3 to GTF..."
 
-# S'assurer que l'environnement conda est toujours activé
+# Ensure conda environment is still activated
 if ! command -v gffread &> /dev/null; then
     echo "WARNING: gffread command not found. Trying to reactivate conda environment..."
     conda activate "$CONDA_ENV_PATH" || { 
@@ -227,7 +227,7 @@ if ! command -v gffread &> /dev/null; then
         exit 1
     }
     
-    # Vérifier à nouveau après réactivation
+    # Check again after reactivation
     if ! command -v gffread &> /dev/null; then
         echo "ERROR: gffread command still not available after reactivating conda environment."
         echo "Please install gffread: conda install -c bioconda gffread"
@@ -235,11 +235,11 @@ if ! command -v gffread &> /dev/null; then
     fi
 fi
 
-# Chemin pour le fichier GTF de sortie
+# Path for the output GTF file
 GTF_FILE="${GENOME_ANNOTATION_DIR}/${TARGET_GENOME_GFF%.gff}.gtf"
 echo "Converting GFF to GTF: ${GENOME_ANNOTATION_DIR}/${TARGET_GENOME_GFF} -> $GTF_FILE"
 
-# Exécuter la conversion avec option -h si -v ne fonctionne pas
+# Run conversion with -h option if -v doesn't work
 gffread "${GENOME_ANNOTATION_DIR}/${TARGET_GENOME_GFF}" -T -o "$GTF_FILE"
 if [ $? -ne 0 ]; then
     echo "ERROR: GFF3 to GTF conversion failed"
@@ -248,7 +248,7 @@ else
     echo "GFF3 to GTF conversion completed successfully"
 fi
 
-# Vérifier que le fichier GTF a été créé
+# Check that the GTF file was created
 if [ ! -f "$GTF_FILE" ]; then
     echo "ERROR: GTF file was not created: $GTF_FILE"
     exit 1

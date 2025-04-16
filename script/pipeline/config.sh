@@ -2,13 +2,13 @@
 
 # === Global Configuration for STARsolo Pipeline ===
 
-#Here you can change the name of the analysis, the location of the folder for the Analysis, the number of threads, the memory, the maximum runtime, the location of the conda environment, the source data locations, the source file names, the target file names...
+# Here you can change the name of the analysis, the location of the folder for the Analysis, the number of threads, the memory, the maximum runtime, the location of the conda environment, the source data locations, the source file names, the target file names...
 
-#Go to the folder where you want to run the analysis :
-# for example : 
-    #cd 1_data/test/starsolo_script_DOL_microSPLIT/
-    #then you can run the analysis with the following command :
-    #sbatch run_pipeline.sh
+# Go to the folder where you want to run the analysis:
+# For example: 
+    # cd 1_data/test/starsolo_script_DOL_microSPLIT/
+    # Then you can run the analysis with the following command:
+    # sbatch run_pipeline.sh
 
 
 # Email Configuration
@@ -22,19 +22,19 @@ BASE_PATH="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/test/STARsolo_micr
 # If it doesn't exist, the pipeline will fail when trying to create the conda environment
 
 # Analysis Name and Base Directory
-ANALYSIS_NAME="STARsolo_DOL_microSPLIT" #for the name of the analysis : In the slurm output file, it will be the name of the job
-BASE_DIR="Analysis_STARsolo_microSPLIT" #for the location of the folder for the Analysis : You can change it
+ANALYSIS_NAME="STARsolo_microSPLIT" # For the name of the analysis: In the slurm output file, it will be the name of the job
+BASE_DIR="Analysis_STARsolo_microSPLIT" # For the location of the folder for the Analysis: You can change it
 
 # Resource Configuration
-THREADS=16 #for the number of threads (cpus-per-task): You can change it #VERY IMPORTANT : YOU NEED TO HAVE ENOUGH THREADS TO RUN THE ANALYSIS : 16 IS MABY NOT ENOUGH FOR THE ANALYSIS =======> test with 32 or 64 is probably better
+THREADS=16 # For the number of threads (cpus-per-task): You can change it # VERY IMPORTANT: YOU NEED TO HAVE ENOUGH THREADS TO RUN THE ANALYSIS: 16 MAY NOT BE ENOUGH FOR THE ANALYSIS =======> test with 32 or 64 is probably better
 
-MEMORY="16G" #for the memory : You can change it #VERY IMPORTANT : YOU NEED TO HAVE ENOUGH MEMORY TO RUN THE ANALYSIS : 16G IS MABY NOT ENOUGH FOR THE ANALYSIS =======> test with 32G or 64G IS PROBABLY BETTER
+MEMORY="16G" # For the memory: You can change it # VERY IMPORTANT: YOU NEED TO HAVE ENOUGH MEMORY TO RUN THE ANALYSIS: 16G MAY NOT BE ENOUGH FOR THE ANALYSIS =======> test with 32G or 64G IS PROBABLY BETTER
 
-MAX_RUNTIME="10:00:00" #for the maximum runtime : You can change it
+MAX_RUNTIME="10:00:00" # For the maximum runtime: You can change it
 
 # Conda Configuration
-CONDA_INIT_SCRIPT="/local/env/envconda.sh" #Path to the conda initialization script - Change this if your cluster uses a different location
-CONDA_ENV_PATH="${BASE_PATH}/${BASE_DIR}/env_STARsolo" #for the location of the conda environment
+CONDA_INIT_SCRIPT="/local/env/envconda.sh" # Path to the conda initialization script - Change this if your cluster uses a different location
+CONDA_ENV_PATH="${BASE_PATH}/${BASE_DIR}/env_STARsolo" # For the location of the conda environment
 
 # Source Data Locations - Absolute paths to prevent errors
 SOURCE_FASTQ="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/Fastq" 

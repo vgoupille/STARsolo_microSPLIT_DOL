@@ -170,6 +170,9 @@ The configuration file (`config.sh`) contains all parameters needed to run the p
   - `SOURCE_GENOME_FASTA`: Filename of the genome reference FASTA
   - `SOURCE_GENOME_GFF`: Filename of the genome annotation file (GFF format)
 
+- **Environment**:
+  - `CONDA_ENV_PATH`: Path where the conda environment will be created (essential for proper installation)
+
 #### Recommended to Configure
 
 - **Resources** (can also be overridden through submit_pipeline.sh):
@@ -179,7 +182,6 @@ The configuration file (`config.sh`) contains all parameters needed to run the p
 
 - **Environment**:
   - `CONDA_INIT_SCRIPT`: Path to the conda initialization script (default: "/local/env/envconda.sh")
-  - `CONDA_ENV_PATH`: Path where the conda environment will be created
 
 - **Analysis Identification**:
   - `EMAIL`: Email address for job notifications
