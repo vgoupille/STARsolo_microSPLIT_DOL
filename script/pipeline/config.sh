@@ -28,7 +28,7 @@ BASE_DIR="Analysis_STARsolo_microSPLIT" # For the location of the folder for the
 # Resource Configuration
 THREADS=16 # For the number of threads (cpus-per-task): You can change it # VERY IMPORTANT: YOU NEED TO HAVE ENOUGH THREADS TO RUN THE ANALYSIS: 16 MAY NOT BE ENOUGH FOR THE ANALYSIS =======> test with 32 or 64 is probably better
 
-MEMORY="16G" # For the memory: You can change it # VERY IMPORTANT: YOU NEED TO HAVE ENOUGH MEMORY TO RUN THE ANALYSIS: 16G MAY NOT BE ENOUGH FOR THE ANALYSIS =======> test with 32G or 64G IS PROBABLY BETTER
+MEMORY="64G" # For the memory: You can change it # VERY IMPORTANT: YOU NEED TO HAVE ENOUGH MEMORY TO RUN THE ANALYSIS: 16G MAY NOT BE ENOUGH FOR THE ANALYSIS =======> test with 16G 32G or 64G IS PROBABLY BETTER
 
 MAX_RUNTIME="10:00:00" # For the maximum runtime: You can change it
 
@@ -37,15 +37,19 @@ CONDA_INIT_SCRIPT="/local/env/envconda.sh" # Path to the conda initialization sc
 CONDA_ENV_PATH="${BASE_PATH}/${BASE_DIR}/env_STARsolo" # For the location of the conda environment
 
 # Source Data Locations - Absolute paths to prevent errors
-SOURCE_FASTQ="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/Fastq" 
-SOURCE_BARCODES="${BASE_PATH}/raw_data/barcodes" 
+SOURCE_FASTQ="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/Fastq"  # <-- Change this to your actual source data location
 
-# Access to files in the parent directory (one level up)
+
+# for barcodes, genome_ref and genome_annotation here we use the file avaible in the repository (raw_data folder) :::::
+SOURCE_BARCODES="${BASE_PATH}/raw_data/barcodes" 
 SOURCE_GENOME_REF="${BASE_PATH}/raw_data/genome_ref" 
 SOURCE_GENOME_ANNOTATION="${BASE_PATH}/raw_data/genome_annotation"
 
-# Example of accessing a file two levels up
-# ANOTHER_REFERENCE="${BASE_PATH}/../../global_references/other_file"
+
+
+
+
+#---------------------------------------------------------------------------
 
 # Source File Names - Update these to match your actual source files
 SOURCE_FASTQ_R1="microSPLIT-600cells_S1_L001_R1_001.fastq.gz"
