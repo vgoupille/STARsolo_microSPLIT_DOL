@@ -14,11 +14,42 @@
 
 # Load configuration
 echo "$(date) - Loading configuration..."
-if [ -f "config.sh" ]; then
-    source config.sh
+
+# Search for config.sh in multiple possible locations without absolute paths
+CONFIG_FOUND=0
+CONFIG_LOCATIONS=(
+    "./config.sh"
+    "script/pipeline/config.sh"
+    "$(dirname "$0")/config.sh"
+    "../config.sh"
+    "../../config.sh"
+)
+
+for CONFIG_PATH in "${CONFIG_LOCATIONS[@]}"; do
+    if [ -f "$CONFIG_PATH" ]; then
+        echo "Found configuration file at: $CONFIG_PATH"
+        source "$CONFIG_PATH"
+        CONFIG_FOUND=1
+        break
+    fi
+done
+
+if [ $CONFIG_FOUND -eq 1 ]; then
     echo "Configuration loaded successfully."
 else
-    echo "ERROR: config.sh not found! Please create the configuration file first."
+    echo "ERROR: config.sh not found in any of the expected locations!"
+    echo "Searched in:"
+    for loc in "${CONFIG_LOCATIONS[@]}"; do
+        echo "  - $loc"
+    done
+    echo "Please create the configuration file at one of these locations or create a symbolic link."
+    exit 1
+fi
+
+# Verify BASE_PATH exists
+if [ ! -d "$BASE_PATH" ]; then
+    echo "ERROR: BASE_PATH directory does not exist: $BASE_PATH"
+    echo "Please check the BASE_PATH variable in your config.sh file"
     exit 1
 fi
 
@@ -43,28 +74,102 @@ check_script() {
 
 # Step 0: Source Conda environment script
 echo "$(date) - Setting up Conda environment..."
-. /local/env/envconda.sh
+if [ -f "$CONDA_INIT_SCRIPT" ]; then
+    echo "Sourcing Conda initialization script from: $CONDA_INIT_SCRIPT"
+    . "$CONDA_INIT_SCRIPT"
+else
+    echo "ERROR: Conda initialization script not found at $CONDA_INIT_SCRIPT"
+    echo "Please check the CONDA_INIT_SCRIPT variable in your config.sh file"
+    exit 1
+fi
 
 # Step 1: Create STARsolo environment (if not already created)
 echo "$(date) - Step 1: Creating STARsolo environment (if needed)..."
-if conda env list | grep -q "${CONDA_ENV_PATH##*/}"; then
-    echo "STARsolo environment already exists. Skipping creation."
-else
-    echo "Creating STARsolo environment..."
-    # Extract commands from create_env_starsolo.sh and run them
-    conda create -p "$CONDA_ENV_PATH" python=3.6 -y
-    check_script "Environment creation"
-    
-    conda activate "$CONDA_ENV_PATH"
-    conda install -c bioconda star=2.7.9 cufflinks=2.2.1 -y
-    check_script "Package installation"
-    
-    # Print versions
-    echo "STAR version:"
-    STAR --version
-    echo "Cufflinks version:"
-    cufflinks --version
+
+# Vérifier d'abord que le chemin parent de l'environnement conda existe
+CONDA_PARENT_DIR=$(dirname "$CONDA_ENV_PATH")
+if [ ! -d "$CONDA_PARENT_DIR" ]; then
+    echo "Creating parent directory for conda environment: $CONDA_PARENT_DIR"
+    mkdir -p "$CONDA_PARENT_DIR" || { echo "ERROR: Failed to create conda environment parent directory"; exit 1; }
 fi
+
+# Vérifier si l'environnement existe déjà
+if conda env list | grep -q "${CONDA_ENV_PATH##*/}"; then
+    echo "STARsolo environment already exists. Trying to activate..."
+    if ! conda activate "$CONDA_ENV_PATH"; then
+        echo "ERROR: Cannot activate existing conda environment. It may be corrupted."
+        echo "Removing and recreating the environment..."
+        conda env remove -p "$CONDA_ENV_PATH" || echo "Warning: Failed to remove existing environment"
+        CREATE_NEW_ENV=1
+    else
+        echo "Successfully activated existing environment."
+        CREATE_NEW_ENV=0
+    fi
+else
+    echo "STARsolo environment does not exist. Will create new environment."
+    CREATE_NEW_ENV=1
+fi
+
+# Créer un nouvel environnement si nécessaire
+if [ $CREATE_NEW_ENV -eq 1 ]; then
+    echo "Creating STARsolo environment at: $CONDA_ENV_PATH"
+    conda create -p "$CONDA_ENV_PATH" python=3.6 -y || { echo "ERROR: Failed to create conda environment"; exit 1; }
+    
+    echo "Installing required packages..."
+    conda activate "$CONDA_ENV_PATH" || { echo "ERROR: Failed to activate the new conda environment"; exit 1; }
+    conda install -c bioconda star=2.7.9 cufflinks=2.2.1 gffread=0.12.1 -y || { echo "ERROR: Failed to install required packages"; exit 1; }
+    
+    # Vérifier les versions des outils installés
+    echo "Checking installed tools versions:"
+    STAR --version || { echo "ERROR: STAR not properly installed"; exit 1; }
+    
+    # Cufflinks ne reconnaît pas l'option --version, on vérifie juste qu'il est exécutable
+    echo "Checking Cufflinks installation:"
+    if ! command -v cufflinks &> /dev/null; then
+        echo "ERROR: Cufflinks not found"
+        exit 1
+    else
+        echo "Cufflinks is installed"
+        # On peut afficher la première ligne d'aide pour confirmer que ça fonctionne
+        cufflinks 2>&1 | head -n 1
+    fi
+    
+    # Vérifier que gffread est disponible
+    echo "Checking gffread installation:"
+    if ! command -v gffread &> /dev/null; then
+        echo "ERROR: gffread not found"
+        exit 1
+    else
+        echo "gffread is installed"
+    fi
+fi
+
+# Toujours activer l'environnement avant de continuer
+echo "Activating conda environment..."
+conda activate "$CONDA_ENV_PATH" || { echo "ERROR: Failed to activate conda environment at $CONDA_ENV_PATH"; exit 1; }
+
+# Vérifier que les commandes requises sont disponibles
+echo "Verifying required tools availability..."
+
+# Vérifier d'abord STAR et gffread qui acceptent des options de version
+for cmd in STAR gffread; do
+    if ! command -v $cmd &> /dev/null; then
+        echo "ERROR: $cmd command not found in the activated environment"
+        echo "Please check your conda environment installation"
+        exit 1
+    fi
+done
+
+# Vérification spéciale pour cufflinks
+if ! command -v cufflinks &> /dev/null; then
+    echo "ERROR: cufflinks command not found in the activated environment"
+    echo "Please check your conda environment installation"
+    exit 1
+else
+    echo "Cufflinks is available"
+fi
+
+echo "Conda environment setup completed successfully."
 
 # Step 2: Create directory structure and symbolic links
 echo "$(date) - Step 2: Setting up directory structure and links..."
@@ -112,9 +217,42 @@ check_success() {
 
 # Convert GFF3 to GTF Format
 echo "$(date) - Converting GFF3 to GTF..."
+
+# S'assurer que l'environnement conda est toujours activé
+if ! command -v gffread &> /dev/null; then
+    echo "WARNING: gffread command not found. Trying to reactivate conda environment..."
+    conda activate "$CONDA_ENV_PATH" || { 
+        echo "ERROR: Failed to reactivate conda environment and gffread is not available."
+        echo "Please ensure that gffread is installed in your conda environment."
+        exit 1
+    }
+    
+    # Vérifier à nouveau après réactivation
+    if ! command -v gffread &> /dev/null; then
+        echo "ERROR: gffread command still not available after reactivating conda environment."
+        echo "Please install gffread: conda install -c bioconda gffread"
+        exit 1
+    fi
+fi
+
+# Chemin pour le fichier GTF de sortie
 GTF_FILE="${GENOME_ANNOTATION_DIR}/${TARGET_GENOME_GFF%.gff}.gtf"
-gffread "${GENOME_ANNOTATION_DIR}/${TARGET_GENOME_GFF}" -T -v -o "$GTF_FILE"
-check_success "GFF3 to GTF conversion"
+echo "Converting GFF to GTF: ${GENOME_ANNOTATION_DIR}/${TARGET_GENOME_GFF} -> $GTF_FILE"
+
+# Exécuter la conversion avec option -h si -v ne fonctionne pas
+gffread "${GENOME_ANNOTATION_DIR}/${TARGET_GENOME_GFF}" -T -o "$GTF_FILE"
+if [ $? -ne 0 ]; then
+    echo "ERROR: GFF3 to GTF conversion failed"
+    exit 1
+else
+    echo "GFF3 to GTF conversion completed successfully"
+fi
+
+# Vérifier que le fichier GTF a été créé
+if [ ! -f "$GTF_FILE" ]; then
+    echo "ERROR: GTF file was not created: $GTF_FILE"
+    exit 1
+fi
 
 # GTF File Correction
 echo "$(date) - Correcting GTF file..."

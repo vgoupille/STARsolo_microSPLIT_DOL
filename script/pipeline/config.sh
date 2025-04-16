@@ -14,6 +14,13 @@
 # Email Configuration
 EMAIL="valentin.goupille@univ-rennes.fr"
 
+# Define the base path for all directories
+BASE_PATH="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/test/STARsolo_microSPLIT_DOL"  # <-- Change this to your actual base directory
+
+# IMPORTANT: Make sure this path exists before running the pipeline
+# You can check it using: [ -d "$BASE_PATH" ] && echo "Path exists" || echo "Path DOES NOT exist"
+# If it doesn't exist, the pipeline will fail when trying to create the conda environment
+
 # Analysis Name and Base Directory
 ANALYSIS_NAME="STARsolo_DOL_microSPLIT" #for the name of the analysis : In the slurm output file, it will be the name of the job
 BASE_DIR="Analysis_STARsolo_microSPLIT" #for the location of the folder for the Analysis : You can change it
@@ -25,21 +32,17 @@ MEMORY="16G" #for the memory : You can change it #VERY IMPORTANT : YOU NEED TO H
 
 MAX_RUNTIME="10:00:00" #for the maximum runtime : You can change it
 
-# Environment Paths
-CONDA_ENV_PATH="${BASE_DIR}/env_STARsolo" #for the location of the conda environment : You can change it (not necessary in Analysis_STARsolo_microSPLIT)
+# Conda Configuration
+CONDA_INIT_SCRIPT="/local/env/envconda.sh" #Path to the conda initialization script - Change this if your cluster uses a different location
+CONDA_ENV_PATH="${BASE_PATH}/${BASE_DIR}/env_STARsolo" #for the location of the conda environment
 
 # Source Data Locations - Absolute paths to prevent errors
-# Define your base path here (change this to your actual base path)
-BASE_PATH="/path/to/your/base/directory"  # <-- Change this to your actual base directory
-
-# Access to files in the current directory
-SOURCE_FASTQ="/path/to/your/fastq/directory" 
-SOURCE_BARCODES="${BASE_PATH}/barcodes/directory" 
+SOURCE_FASTQ="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/Fastq" 
+SOURCE_BARCODES="${BASE_PATH}/raw_data/barcodes" 
 
 # Access to files in the parent directory (one level up)
-SOURCE_GENOME_REF="${BASE_PATH}/../shared_references/genome_ref/directory" 
-# Example with direct absolute path without using variables
-SOURCE_GENOME_ANNOTATION="/absolute/path/to/genome_annotation/directory"
+SOURCE_GENOME_REF="${BASE_PATH}/raw_data/genome_ref" 
+SOURCE_GENOME_ANNOTATION="${BASE_PATH}/raw_data/genome_annotation"
 
 # Example of accessing a file two levels up
 # ANOTHER_REFERENCE="${BASE_PATH}/../../global_references/other_file"

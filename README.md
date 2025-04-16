@@ -177,15 +177,16 @@ The configuration file (`config.sh`) contains all parameters needed to run the p
   - `MEMORY`: Memory allocation (default: 16G, recommended: 32G or 64G for large genomes)
   - `MAX_RUNTIME`: Maximum job runtime in format HH:MM:SS (default: 10:00:00)
 
+- **Environment**:
+  - `CONDA_INIT_SCRIPT`: Path to the conda initialization script (default: "/local/env/envconda.sh")
+  - `CONDA_ENV_PATH`: Path where the conda environment will be created
+
 - **Analysis Identification**:
   - `EMAIL`: Email address for job notifications
   - `ANALYSIS_NAME`: Name of the analysis (will be used for job name)
   - `BASE_DIR`: Directory where all output will be stored
 
 #### Optional Parameters
-
-- **Environment**:
-  - `CONDA_ENV_PATH`: Path where the conda environment will be created
 
 - **Output File Names**:
   - `TARGET_FASTQ_R1`: Internal symbolic link name for R1 FASTQ
