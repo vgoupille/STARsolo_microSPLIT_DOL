@@ -52,8 +52,15 @@ SOURCE_GENOME_ANNOTATION="${BASE_PATH}/raw_data/genome_annotation"
 #---------------------------------------------------------------------------
 
 # Source File Names - Update these to match your actual source files
-SOURCE_FASTQ_R1="microSPLIT-600cells_S1_L001_R1_001.fastq.gz"
-SOURCE_FASTQ_R2="microSPLIT-600cells_S1_L001_R2_001.fastq.gz"
+SOURCE_FASTQ_R1="microSPLIT-600cells_S1_L001_R1_001.fastq.gz" # <-- Change this to your actual source file name
+SOURCE_FASTQ_R2="microSPLIT-600cells_S1_L001_R2_001.fastq.gz" # <-- Change this to your actual source file name
+
+
+
+
+
+
+
 SOURCE_GENOME_FASTA="GCA_030064105.1_ASM3006410v1_genomic.fna"
 SOURCE_GENOME_GFF="GCA_030064105.1_ASM3006410v1_genomic.gff"
 
