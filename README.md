@@ -177,7 +177,7 @@ The configuration file (`config.sh`) contains all parameters needed to run the p
 
 - **Resources** (can also be overridden through submit_pipeline.sh):
   - `THREADS`: Number of CPU threads to use (default: 16, recommended: 32 or 64 for large datasets)
-  - `MEMORY`: Memory allocation (default: 16G, recommended: 32G or 64G for large genomes)
+  - `MEMORY`: Memory allocation (default: 64G, recommended: 32G or 64G for large genomes)
   - `MAX_RUNTIME`: Maximum job runtime in format HH:MM:SS (default: 10:00:00)
 
 - **Environment**:
