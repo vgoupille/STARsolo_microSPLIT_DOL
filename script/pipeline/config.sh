@@ -15,29 +15,29 @@
 EMAIL="valentin.goupille@univ-rennes.fr"
 
 # Define the base path for all directories
-BASE_PATH="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/test/STARsolo_microSPLIT_DOL"  # <-- Change this to your actual base directory
+BASE_PATH="/scratch/vgoupille/STARsolo_microSPLIT_DOL"  # <-- Change this to your actual base directory
 
 # IMPORTANT: Make sure this path exists before running the pipeline
 # You can check it using: [ -d "$BASE_PATH" ] && echo "Path exists" || echo "Path DOES NOT exist"
 # If it doesn't exist, the pipeline will fail when trying to create the conda environment
 
 # Analysis Name and Base Directory
-ANALYSIS_NAME="STARsolo_microSPLIT" # For the name of the analysis: In the slurm output file, it will be the name of the job
-BASE_DIR="Analysis_STARsolo_microSPLIT" # For the location of the folder for the Analysis: You can change it
+ANALYSIS_NAME="STARsolo_microSPLIT_BC_0077" # For the name of the analysis: In the slurm output file, it will be the name of the job
+BASE_DIR="Analysis_STARsolo_microSPLIT_BC_0077" # For the location of the folder for the Analysis: You can change it
 
 # Resource Configuration
-THREADS=16 # For the number of threads (cpus-per-task): You can change it # VERY IMPORTANT: YOU NEED TO HAVE ENOUGH THREADS TO RUN THE ANALYSIS: 16 MAY NOT BE ENOUGH FOR THE ANALYSIS =======> test with 32 or 64 is probably better
+THREADS=32 # For the number of threads (cpus-per-task): You can change it # VERY IMPORTANT: YOU NEED TO HAVE ENOUGH THREADS TO RUN THE ANALYSIS: 16 MAY NOT BE ENOUGH FOR THE ANALYSIS =======> test with 32 or 64 is probably better
 
 MEMORY="64G" # For the memory: You can change it # VERY IMPORTANT: YOU NEED TO HAVE ENOUGH MEMORY TO RUN THE ANALYSIS: 16G MAY NOT BE ENOUGH FOR THE ANALYSIS =======> test with 16G 32G or 64G IS PROBABLY BETTER
 
-MAX_RUNTIME="10:00:00" # For the maximum runtime: You can change it
+MAX_RUNTIME="24:00:00" # For the maximum runtime: You can change it
 
 # Conda Configuration
 CONDA_INIT_SCRIPT="/local/env/envconda.sh" # Path to the conda initialization script - Change this if your cluster uses a different location
 CONDA_ENV_PATH="${BASE_PATH}/${BASE_DIR}/env_STARsolo" # For the location of the conda environment
 
 # Source Data Locations - Absolute paths to prevent errors
-SOURCE_FASTQ="/home/genouest/cnrs_umr6553/vgoupille/DOL_scRNAseq/1_data/Fastq"  # <-- Change this to your actual source data location
+SOURCE_FASTQ="/scratch/vgoupille/NTS-412_fastq/fastq"  # <-- Change this to your actual source data location
 
 
 # for barcodes, genome_ref and genome_annotation here we use the file avaible in the repository (raw_data folder) :::::
@@ -52,8 +52,8 @@ SOURCE_GENOME_ANNOTATION="${BASE_PATH}/raw_data/genome_annotation"
 #---------------------------------------------------------------------------
 
 # Source File Names - Update these to match your actual source files
-SOURCE_FASTQ_R1="microSPLIT-600cells_S1_L001_R1_001.fastq.gz" # <-- Change this to your actual source file name
-SOURCE_FASTQ_R2="microSPLIT-600cells_S1_L001_R2_001.fastq.gz" # <-- Change this to your actual source file name
+SOURCE_FASTQ_R1="BC_0077_R1.fastq.gz" # <-- Change this to your actual source file name
+SOURCE_FASTQ_R2="BC_0077_R2.fastq.gz" # <-- Change this to your actual source file name
 
 
 
@@ -65,8 +65,8 @@ SOURCE_GENOME_FASTA="GCA_030064105.1_ASM3006410v1_genomic.fna"
 SOURCE_GENOME_GFF="GCA_030064105.1_ASM3006410v1_genomic.gff"
 
 # Target (Symbolic Link) File Names
-TARGET_FASTQ_R1="microSPLIT-R1.fastq.gz"
-TARGET_FASTQ_R2="microSPLIT-R2.fastq.gz"
+TARGET_FASTQ_R1="BC_0077_R1.fastq.gz" 
+TARGET_FASTQ_R2="BC_0077_R2.fastq.gz"
 TARGET_GENOME_FASTA="genome_ref_PsR401.fna"
 TARGET_GENOME_GFF="genome_annotation_PsR401.gff"
 

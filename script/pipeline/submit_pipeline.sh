@@ -5,8 +5,8 @@
 
 # Default values (will be overwritten by config.sh if exists)
 THREADS=16
-MEMORY="16G"
-MAX_RUNTIME="8:00:00"
+MEMORY="64G"
+MAX_RUNTIME="24:00:00"
 EMAIL="valentin.goupille@univ-rennes.fr"
 ANALYSIS_NAME="STARsolo_microSPLIT_Pipeline"
 
